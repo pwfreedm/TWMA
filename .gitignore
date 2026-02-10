@@ -1,4 +1,4 @@
 *
 !.gitignore
-!blanks/
+!blanks/*
 !*.py

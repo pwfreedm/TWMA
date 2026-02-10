@@ -1,4 +1,6 @@
-*
+/*
+
+!blanks/*.pdf
 !.gitignore
-!blanks/Euthanasia_Consent_Jan_2026.pdf
 !*.py
+

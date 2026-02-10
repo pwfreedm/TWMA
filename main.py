@@ -2,7 +2,7 @@ from db import *
 
 
 def main():
-    database = Database("test.db")
+    pass
 
 
 if __name__ == "__main__":

@@ -4,29 +4,70 @@ from pathlib import Path
 
 class Client:
     _name: str
+    _email: str
     _phone: str
     _address: str
     _mileage: int
     _travel: int
 
     def __init__(
-        self, name: str, phone: str, address: str, mileage: int, travel_thresh: int = 0
+        self,
+        name: str,
+        email: str,
+        phone: str,
+        address: str,
+        mileage: int,
+        travel_thresh: int = 0,
     ):
         self._name = name
         self._phone = phone
         self._address = address
+        self._email = email
         self._mileage = mileage
         self._travel = 0
 
     def generate_sql_value(self, id: int):
-        return (id, self._name, self._phone, self._address, self._mileage, self._travel)
+        return (
+            id,
+            self._name,
+            self._email,
+            self._phone,
+            self._address,
+            self._mileage,
+            self._travel,
+        )
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def email(self):
+        return self._email
+
+    @property
+    def phone(self):
+        return self._phone
+
+    @property
+    def address(self):
+        return self._address
+
+    @property
+    def mileage(self):
+        return self._mileage
+
+    @property
+    def travel(self):
+        return self._travel
 
 
 class Patient:
     _name: str
     _species: str
-    _gender: str
+    _sex: str
     _breed: str
+    _age: int
     _weight: int
     _color: str
     _disposal: str
@@ -37,18 +78,20 @@ class Patient:
         self,
         name: str,
         species: str,
-        gender: str,
+        sex: str,
         weight: int,
         disposal: str,
         pawprints: int,
+        age: int,
         breed: str = "",
         color: str = "",
         notes: str = "",
     ):
         self._name = name
         self._species = species
-        self._gender = gender
+        self._sex = sex
         self._breed = breed
+        self._age = age
         self._weight = weight
         self._color = color
         self._disposal = disposal
@@ -60,8 +103,9 @@ class Patient:
             id,
             self._name,
             self._species,
-            self._gender,
+            self._sex,
             self._breed,
+            self._age,
             self._weight,
             self._color,
             self._disposal,
@@ -70,6 +114,46 @@ class Patient:
             vet_ID,
             owner_ID,
         )
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def species(self):
+        return self._species
+
+    @property
+    def sex(self):
+        return self._sex
+
+    @property
+    def breed(self):
+        return self._breed
+
+    @property
+    def age(self):
+        return self._age
+
+    @property
+    def weight(self):
+        return self._weight
+
+    @property
+    def color(self):
+        return self._color
+
+    @property
+    def disposal(self):
+        return self._disposal
+
+    @property
+    def pawprints(self):
+        return self._pawprints
+
+    @property
+    def notes(self):
+        return self._notes
 
 
 class Appointment:
@@ -82,6 +166,14 @@ class Appointment:
 
     def generate_sql_value(self, owner_ID: int, patient_ID: int):
         return (patient_ID, self._date, self._time, owner_ID)
+
+    @property
+    def date(self):
+        return self._date
+
+    @property
+    def time(self):
+        return self._time
 
 
 class Vet:
@@ -98,6 +190,22 @@ class Vet:
 
     def generate_sql_value(self, id: int):
         return (id, self._name, self._email, self._phone, self._address)
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def email(self):
+        return self._email
+
+    @property
+    def phone(self):
+        return self._phone
+
+    @property
+    def address(self):
+        return self._address
 
 
 class Database:
@@ -116,7 +224,8 @@ class Database:
         self._cursor.execute(
             """CREATE TABLE Clients(
                     id INTEGER PRIMARY KEY,
-                    name TEXT NOT NULL, 
+                    name TEXT NOT NULL,
+                    email TEXT NOT NULL,
                     phone TEXT NOT NULL,
                     address TEXT NOT NULL,
                     travel_time INTEGER,
@@ -137,8 +246,9 @@ class Database:
                     id INTEGER PRIMARY KEY,
                     name TEXT NOT NULL,
                     species TEXT NOT NULL,
-                    gender TEXT NOT NULL,
+                    sex TEXT NOT NULL,
                     breed TEXT,
+                    age INTEGER NOT NULL,
                     weight INTEGER NOT NULL,
                     color TEXT,
                     disposal TEXT NOT NULL,
@@ -180,7 +290,7 @@ class Database:
         (vet_id, vet_row_count) = self.get_vet_id(vet)
 
         self._cursor.execute(
-            "INSERT INTO Clients VALUES(?, ?, ?, ?, ?, ?)",
+            "INSERT INTO Clients VALUES(?, ?, ?, ?, ?, ?, ?)",
             client.generate_sql_value(client_id),
         )
         if vet_id == vet_row_count:
@@ -188,7 +298,7 @@ class Database:
                 "INSERT INTO Vets VALUES(?, ?, ?, ?, ?)", vet.generate_sql_value(vet_id)
             )
         self._cursor.execute(
-            "INSERT INTO Patients VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO Patients VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             patient.generate_sql_value(patient_id, client_id, vet_id),
         )
         self._cursor.execute(

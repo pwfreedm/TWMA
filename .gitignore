@@ -1,6 +1,8 @@
 /*
 
 !blanks/*.pdf
+!templates/*.html
+
 !.gitignore
 !*.py
 

@@ -1,7 +1,7 @@
 /*
 
 !blanks/*.pdf
-!templates/*.html
+!templates/
 
 !.gitignore
 !*.py

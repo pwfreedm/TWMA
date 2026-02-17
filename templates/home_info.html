@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Form Page</title>
+</head>
+<body>
+    <h2>Home Euthanasia Info</h2>
+
+    <form action="{{ url_for('submit') }}" method="POST">
+        <label>Client:</label>
+        <input type="text" name="client" required><br><br>
+
+        <label>Phone:</label>
+        <input type="tel" name="phone" required><br><br>
+
+        <label>Email:</label>
+        <input type="email" name="email" required><br><br>
+
+        <label>Scheduled Date:</label>
+        <input type="date" name="date" required>
+
+        <label>Time:</label>
+        <input type="time" name="time" required><br><br>
+
+        <label>Address:</label>
+        <input type="text" name="address" required><br><br>
+
+        <label>City:</label>
+        <input type="text" name="city" required><br><br>
+
+        <label>State:</label>
+        <input type="text" name="state" required>
+
+        <label>Zip:</label>
+        <input type="text" name="zip" required><br><br>
+
+        <label>Mileage:</label>
+        <input type="number" name="mileage" required>
+
+        <label>Travel Fee:</label>
+        <input type="checkbox" name="fee"><br><br>
+
+        <input type="radio" id="cat" name="animal" value="cat">
+        <label for="cat">Cat</label>
+        <input type="radio" id="dog" name="animal" value="dog">
+        <label for="dog">Dog</label>
+        <input type="radio" id="other" name="animal" value="other">
+        <label for="other">Other</label><br><br>
+
+        <label>Patient:</label>
+        <input type="text" name="patient" required>
+        
+        <label>Age:</label>
+        <input type="number" name="age" required><br><br>
+
+        <label>Gender:</label>
+        <input type="text" name="sex" required>
+
+        <label>Breed:</label>
+        <input type="text" name="breed"><br><br>
+
+        <label>Color:</label>
+        <input type="text" name="color" required>
+
+        <label>Weight:</label>
+        <input type="number" name="weight" required><br><br>
+
+        <label>Local Vet:</label>
+        <input type="text" name="vet" required><br><br>
+
+        <label>Email:</label>
+        <input type="text" name="vet_email"><br><br>
+
+        <input type="radio" id="home" name="disposal" value="home">
+        <label for="home">Home</label>
+        <input type="radio" id="private" name="disposal" value="private">
+        <label for="private">Private</label>
+        <input type="radio" id="communal" name="disposal" value="disposal">
+        <label for="communal">Communal</label><br><br>
+
+        <label>Number of Paw Prints:</label><br>
+        <input type="number" name="prints"><br><br>
+
+        <label>Notes:</label><br>
+        <textarea name="notes"></textarea><br><br>
+
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>

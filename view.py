@@ -1,7 +1,10 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for
+from core import enqueue
 
 app = Flask(__name__)
 
+def start_flask_app(debug:bool = False):
+    app.run(debug=debug)
 
 @app.route("/")
 def landing():
@@ -13,9 +16,5 @@ def form():
 
 @app.route("/submit", methods=["POST"])
 def submit():
-
-    #todo: figure out how to send off request.form to the controller
+    enqueue(request.form.to_dict())
     return redirect(url_for('landing'))
-
-if __name__ == "__main__":
-    app.run(debug=True)

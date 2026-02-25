@@ -2,6 +2,7 @@
 
 !blanks/*.pdf
 !templates/
+!static/
 
 !.gitignore
 !*.py

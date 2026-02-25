@@ -1,20 +1,19 @@
 from pypdf import PdfReader, PdfWriter
 from db import Client, Patient, Appointment
 from abc import ABC, abstractmethod
-from re import sub
-from os import makedirs
+import os as os
+from pathlib import Path
 
-bad_fp_chars: str = r'[<>:"/\\|?*]'
 
 class GenerableForm(ABC):
 
     @abstractmethod
-    def generate(self, blank: str, filepath: str):
+    def generate(self):
         """generation fills the form @p blank and stores it in @p filepath"""
         pass
 
     @abstractmethod
-    def _mk_fp (self, filepath: str):
+    def _mk_fp (self):
         """Makes sure that a correctly formatted filepath exists for the generated form to exist in"""
         pass
 
@@ -31,6 +30,8 @@ class Consent(GenerableForm):
     _age: int
     _color: str
     _email: str
+    fp: Path = os.path.join(os.path.expanduser('~'), 'Desktop', 'Consents')
+
 
     def __init__(self, client: Client, pt: Patient, appt: Appointment):
         self._date = appt.date
@@ -45,13 +46,13 @@ class Consent(GenerableForm):
         self._color = pt.color
         self._email = client.email
 
-    def _mk_fp(self, filepath: str) -> str:
-        path = filepath + f"/{sub(bad_fp_chars,' ', self._date)}/consents"
-        makedirs(path, exist_ok=True)
-        return path + "/"
+    def _mk_fp(self) -> Path:
+        path = os.path.join(self.fp, str(self._date))
+        os.makedirs(path, exist_ok=True)
+        return path
 
-    def generate(self, blank: str, filepath: str):
-        reader = PdfReader(blank)
+    def generate(self):
+        reader = PdfReader(stream=Path("blanks/Euthanasia_Consent_Jan_2026.pdf"))
         writer = PdfWriter()
 
         writer.append(reader)
@@ -75,7 +76,6 @@ class Consent(GenerableForm):
             flatten=True,
         )
         writer.remove_annotations(subtypes="/Widget")
-        
-        writer.write(self._mk_fp(filepath) + f"{self._pet}.pdf")
+        writer.write(os.path.join(self._mk_fp(), f"{self._pet}.pdf"))
 
 

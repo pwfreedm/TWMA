@@ -1,6 +1,6 @@
 import sqlite3 as sq
 from pathlib import Path
-
+import os as os
 
 class Client:
     _name: str
@@ -212,15 +212,17 @@ class Database:
     _connection: sq.Connection
     _cursor: sq.Cursor
 
-    def __init__(self, path: str):
-        db_exists: bool = Path(path).is_file()
-        self._connection = sq.connect(path)
+    def __init__(self, path: Path = Path(os.path.join(os.path.expanduser('~'), 'Documents', 'TWMA_DB'))):
+        db_exists: bool = path.is_dir()
+        if not db_exists:
+            os.makedirs(path, exist_ok= True)
+        self._connection = sq.connect(os.path.join(path, 'TWMA.db'))
         self._cursor = self._connection.cursor()
-        self._connection.execute("PRAGMA foreign_keys = ON")
         if not db_exists:
             self.__setup()
 
     def __setup(self):
+        self._connection.execute("PRAGMA foreign_keys = ON")
         self._cursor.execute(
             """CREATE TABLE Clients(
                     id INTEGER PRIMARY KEY,

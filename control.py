@@ -29,5 +29,5 @@ def parse_form(form: dict[str, str]) -> tuple[Client, Patient, Appointment, Vet]
 if __name__ == '__main__':
     control = Thread(target=app_loop)
     control.start()
-    start_flask_app(debug=True)
+    start_flask_app()
     control.join()

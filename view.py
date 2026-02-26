@@ -1,10 +1,16 @@
 from flask import Flask, render_template, request, redirect, url_for
 from core import enqueue
+import webview
 
 app = Flask(__name__)
 
-def start_flask_app(debug:bool = False):
-    app.run(debug=debug)
+def serve_app():
+    import waitress
+    waitress.serve(app)
+
+def start_flask_app():
+    webview.create_window('TWMA', app)
+    webview.start()
 
 @app.route("/")
 def landing():

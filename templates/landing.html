@@ -2,13 +2,18 @@
 <html>
 <head>
     <title>Till We Meet Again</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
 </head>
 <body>
-    <h1>TWMA Database</h1>
-    <p>Select a form:</p>
+    <div class="container">
+        <h1>TWMA Database</h1>
+        <p class="subtitle">Select a form:</p>
 
-    <a href="{{ url_for('form') }}">
-        <button>new patient</button>
-    </a>
+        <div class="button-grid">
+            <a href="{{ url_for('form') }}" class="card-button">
+                <span>New Patient</span>
+            </a>
+        </div>
+    </div>
 </body>
 </html>

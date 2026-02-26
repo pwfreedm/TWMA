@@ -7,3 +7,5 @@
 !.gitignore
 !*.py
 
+!control.spec
+!requirements.txt

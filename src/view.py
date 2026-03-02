@@ -1,16 +1,16 @@
 from flask import Flask, render_template, request, redirect, url_for
 import webview
 
-from src.core import enqueue
+from src.core import app_core
 
 app = Flask(__name__)
 
-def serve_app():
-    import waitress
-    waitress.serve(app)
-
+def on_close():
+    app_core.shutdown()
+    
 def start_flask_app():
-    webview.create_window('TWMA', app)
+    window = webview.create_window('TWMA', app)
+    window.events.closed += on_close
     webview.start()
 
 @app.route("/")
@@ -23,5 +23,5 @@ def form():
 
 @app.route("/submit", methods=["POST"])
 def submit():
-    enqueue(request.form.to_dict())
+    app_core.enqueue(request.form.to_dict())
     return redirect(url_for('landing'))

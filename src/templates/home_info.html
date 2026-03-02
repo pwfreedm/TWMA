@@ -18,7 +18,7 @@
         <input type="email" name="email"><br><br>
 
         <label>Scheduled Date:</label>
-        <input type="date" name="date">
+        <input type="date" name="date" id="date">
 
         <label>Time:</label>
         <input type="time" name="time"><br><br>
@@ -30,7 +30,7 @@
         <input type="text" name="city"><br><br>
 
         <label>State:</label>
-        <input type="text" name="state">
+        <input type="text" name="state" value="PA">
 
         <label>Zip:</label>
         <input type="text" name="zip"><br><br>
@@ -79,5 +79,6 @@
         <button type="submit">Submit</button>
     </form>
     <script src="{{ url_for('static', filename='js/no-scroll.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/date.js') }}"></script>
 </body>
 </html>

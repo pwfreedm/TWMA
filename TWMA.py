@@ -1,10 +1,11 @@
 from threading import Thread
-
-from core import dequeue, address
-from db import *
-from forms import Consent
-from view import start_flask_app
 import os as os
+
+from src.core import dequeue, address
+from src.db import *
+from src.forms import Consent
+from src.view import start_flask_app
+
 
 def app_loop():
     should_quit = False

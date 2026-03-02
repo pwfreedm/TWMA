@@ -1,5 +1,6 @@
-from db import *
-from forms import *
+from src.db import *
+from src.forms import *
+
 cl = Client(
     name="Test", 
     email="test@gmail.com", 

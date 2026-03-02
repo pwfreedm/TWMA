@@ -35,15 +35,15 @@ class Consent(GenerableForm):
 
     def __init__(self, client: Client, pt: Patient, appt: Appointment):
         self._date = appt.date
-        self._owner = client.name
-        self._addr = client.address
+        self._owner = client.name.title()
+        self._addr = client.address.title()
         self._phone = client.phone
-        self._pet = pt.name
-        self._breed = pt.breed
-        self._species = pt.species
-        self._sex = pt.sex
+        self._pet = pt.name.title()
+        self._breed = pt.breed.title()
+        self._species = pt.species.title()
+        self._sex = pt.sex.title()
         self._age = pt.age
-        self._color = pt.color
+        self._color = pt.color.title()
         self._email = client.email
 
     def _mk_fp(self) -> Path:
@@ -76,6 +76,7 @@ class Consent(GenerableForm):
             flatten=True,
         )
         writer.remove_annotations(subtypes="/Widget")
-        writer.write(os.path.join(self._mk_fp(), f"{self._pet}.pdf"))
+        lastname = self._owner.split(" ")[-1]
+        writer.write(os.path.join(self._mk_fp(), f"{lastname}.pdf"))
 
 

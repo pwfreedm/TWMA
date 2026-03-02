@@ -7,8 +7,6 @@ class Client:
     _email: str
     _phone: str
     _address: str
-    _mileage: int
-    _travel: int
 
     def __init__(
         self,
@@ -16,15 +14,11 @@ class Client:
         email: str,
         phone: str,
         address: str,
-        mileage: int,
-        travel_thresh: int = 0,
     ):
-        self._name = name
-        self._phone = phone
-        self._address = address
-        self._email = email
-        self._mileage = mileage
-        self._travel = 0
+        self._name = name.lower()
+        self._phone = phone.lower()
+        self._address = address.lower()
+        self._email = email.lower()
 
     def generate_sql_value(self, id: int):
         return (
@@ -32,9 +26,7 @@ class Client:
             self._name,
             self._email,
             self._phone,
-            self._address,
-            self._mileage,
-            self._travel,
+            self._address
         )
 
     @property
@@ -53,15 +45,6 @@ class Client:
     def address(self):
         return self._address
 
-    @property
-    def mileage(self):
-        return self._mileage
-
-    @property
-    def travel(self):
-        return self._travel
-
-
 class Patient:
     _name: str
     _species: str
@@ -77,24 +60,24 @@ class Patient:
     def __init__(
         self,
         name: str,
-        species: str,
-        sex: str,
-        weight: int,
-        disposal: str,
-        pawprints: int,
-        age: int,
+        species: str = "",
+        sex: str = "",
+        weight: int = 0,
+        disposal: str = "",
+        pawprints: int = 0,
+        age: int = 0,
         breed: str = "",
         color: str = "",
         notes: str = "",
     ):
-        self._name = name
-        self._species = species
-        self._sex = sex
-        self._breed = breed
+        self._name = name.lower()
+        self._species = species.lower()
+        self._sex = sex.lower()
+        self._breed = breed.lower()
         self._age = age
         self._weight = weight
-        self._color = color
-        self._disposal = disposal
+        self._color = color.lower()
+        self._disposal = disposal.lower()
         self._pawprints = pawprints
         self._notes = notes
 
@@ -155,14 +138,13 @@ class Patient:
     def notes(self):
         return self._notes
 
-
 class Appointment:
     _date: str
     _time: str
 
     def __init__(self, date: str, time: str):
-        self._date = date
-        self._time = time
+        self._date = date.lower()
+        self._time = time.lower()
 
     def generate_sql_value(self, owner_ID: int, patient_ID: int):
         return (patient_ID, self._date, self._time, owner_ID)
@@ -175,38 +157,25 @@ class Appointment:
     def time(self):
         return self._time
 
-
 class Vet:
     _name: str
-    _email: str
-    _phone: str
-    _address: str
+    _comm: str
 
-    def __init__(self, name: str, email: str, phone: str = "", address: str = ""):
-        self._name = name
-        self._email = email
-        self._phone = phone
-        self._address = address
+
+    def __init__(self, name: str, comm: str = ""):
+        self._name = name.lower()
+        self._comm = comm.lower()
 
     def generate_sql_value(self, id: int):
-        return (id, self._name, self._email, self._phone, self._address)
-
+        return (id, self._name, self._comm)
+    
     @property
     def name(self):
         return self._name
-
+    
     @property
-    def email(self):
-        return self._email
-
-    @property
-    def phone(self):
-        return self._phone
-
-    @property
-    def address(self):
-        return self._address
-
+    def comm(self):
+        return self._comm
 
 class Database:
     _connection: sq.Connection
@@ -227,36 +196,32 @@ class Database:
             """CREATE TABLE Clients(
                     id INTEGER PRIMARY KEY,
                     name TEXT NOT NULL,
-                    email TEXT NOT NULL,
-                    phone TEXT NOT NULL,
-                    address TEXT NOT NULL,
-                    travel_time INTEGER,
-                    travel_fee INTEGER
+                    email TEXT,
+                    phone TEXT,
+                    address TEXT
                     )"""
         )
         self._cursor.execute(
             """CREATE TABLE Vets(
                     id INTEGER PRIMARY KEY,
                     name TEXT NOT NULL,
-                    email TEXT NOT NULL,
-                    phone TEXT,
-                    address TEXT
+                    contact TEXT
                     )"""
         )
         self._cursor.execute(
             """CREATE TABLE Patients(
                     id INTEGER PRIMARY KEY,
                     name TEXT NOT NULL,
-                    species TEXT NOT NULL,
-                    sex TEXT NOT NULL,
+                    species TEXT,
+                    sex TEXT,
                     breed TEXT,
-                    age INTEGER NOT NULL,
-                    weight INTEGER NOT NULL,
+                    age INTEGER,
+                    weight INTEGER,
                     color TEXT,
-                    disposal TEXT NOT NULL,
-                    pawprints INTEGER NOT NULL,
-                    notes TEXT NOT NULL,
-                    vet_ID INTEGER NOT NULL REFERENCES Vets(id),
+                    disposal TEXT,
+                    pawprints INTEGER,
+                    notes TEXT,
+                    vet_ID INTEGER REFERENCES Vets(id),
                     owner_ID INTEGER NOT NULL REFERENCES Clients(id)
                     )"""
         )
@@ -292,12 +257,12 @@ class Database:
         (vet_id, vet_row_count) = self.get_vet_id(vet)
 
         self._cursor.execute(
-            "INSERT INTO Clients VALUES(?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO Clients VALUES(?, ?, ?, ?, ?)",
             client.generate_sql_value(client_id),
         )
         if vet_id == vet_row_count:
             self._cursor.execute(
-                "INSERT INTO Vets VALUES(?, ?, ?, ?, ?)", vet.generate_sql_value(vet_id)
+                "INSERT INTO Vets VALUES(?, ?, ?)", vet.generate_sql_value(vet_id)
             )
         self._cursor.execute(
             "INSERT INTO Patients VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",

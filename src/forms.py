@@ -1,9 +1,9 @@
 from pypdf import PdfReader, PdfWriter
-from db import Client, Patient, Appointment
 from abc import ABC, abstractmethod
 import os as os
 from pathlib import Path
 
+from src.db import Client, Patient, Appointment
 
 class GenerableForm(ABC):
 

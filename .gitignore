@@ -1,8 +1,7 @@
 /*
 
 !blanks/
-!templates/
-!static/
+!src/
 
 !.gitignore
 !*.py

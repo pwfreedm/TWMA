@@ -11,7 +11,7 @@ def on_close():
 def start_flask_app():
     window = webview.create_window('TWMA', app)
     window.events.closed += on_close
-    webview.start()
+    webview.start(gui="qt")
 
 @app.route("/")
 def landing():

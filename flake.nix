@@ -18,9 +18,11 @@
         qt6.qttranslations
         python314Packages.pyqt6
         python314Packages.pyqt6-webengine
-        python314Packages.pyside6
 
         python314Packages.pywebview
+        python314Packages.pypdf
+        python314Packages.flask
+        python314Packages.cryptography
 
       ];
     };

@@ -4,6 +4,7 @@ import os as os
 from pathlib import Path
 
 from src.db import Client, Patient, Appointment
+from src.core import wrap_path
 
 class GenerableForm(ABC):
 
@@ -52,7 +53,7 @@ class Consent(GenerableForm):
         return path
 
     def generate(self):
-        reader = PdfReader(stream=Path("blanks/Euthanasia_Consent_Jan_2026.pdf"))
+        reader = PdfReader(stream=wrap_path("blanks/Euthanasia_Consent_Jan_2026.pdf"))
         writer = PdfWriter()
 
         writer.append(reader)

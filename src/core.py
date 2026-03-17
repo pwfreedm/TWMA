@@ -1,4 +1,7 @@
 from queue import Queue, ShutDown
+import sys
+from os import path
+
 from src.db import Client, Patient, Appointment, Vet
 from src.utils import address #move this if parse_form ever finds a new home
    
@@ -40,3 +43,11 @@ def parse_form(form: dict[str, str]) -> tuple[Client, Patient, Appointment, Vet]
             Vet(form['vet'])
         ]
     )
+
+def wrap_path(relative_path: str) -> Path:
+    """if running the app through pyinstaller, this will replace a path of ./something with pyinstaller root/something"""
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = path.abspath(".")
+    return path.join(base_path, relative_path)

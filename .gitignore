@@ -6,5 +6,6 @@
 !.gitignore
 !*.py
 
-!control.spec
 !requirements.txt
+!flake.nix
+!build.sh

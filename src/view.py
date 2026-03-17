@@ -8,10 +8,10 @@ app = Flask(__name__)
 def on_close():
     app_core.shutdown()
     
-def start_flask_app():
+def init_frontend():
     window = webview.create_window('TWMA', app)
     window.events.closed += on_close
-    webview.start()
+    webview.start(gui="qt")
 
 @app.route("/")
 def landing():

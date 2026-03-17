@@ -4,7 +4,7 @@ import os as os
 from src.core import app_core, parse_form
 from src.db import *
 from src.forms import Consent
-from src.view import start_flask_app
+from src.view import init_frontend
 
 
 def process_form():
@@ -16,5 +16,5 @@ def process_form():
 if __name__ == '__main__':
     backend = Thread(target=process_form)
     backend.start()
-    start_flask_app()
+    init_frontend()  
     backend.join()

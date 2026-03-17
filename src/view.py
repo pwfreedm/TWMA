@@ -5,21 +5,13 @@ from flask import Flask, render_template, request, redirect, url_for
 import webview
 
 from src.core import app_core
-
-
-def get_pyinstaller_path(relative_path: str) -> Path:
-    """convert a traditional path into a packaged path"""
-    try:
-        base_path = sys._MEIPASS
-    except Exception:
-        base_path = path.abspath(".")
-    return path.join(base_path, relative_path)
+from src.core import wrap_path
 
 
 app = Flask(
     __name__,
-    template_folder=get_pyinstaller_path("templates"),
-    static_folder=get_pyinstaller_path("static"),
+    template_folder=wrap_path("templates"),
+    static_folder=wrap_path("static"),
 )
 
 

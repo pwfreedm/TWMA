@@ -1,10 +1,24 @@
 from queue import Queue, ShutDown
-import sys
-from os import path
+
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import DeclarativeBase
 
 from src.db import Client, Patient, Appointment, Vet
-from src.utils import address #move this if parse_form ever finds a new home
-   
+from src.utils import address, wrap_path #move this if parse_form ever finds a new home
+
+
+class Base (DeclarativeBase):
+    pass
+
+app = Flask(
+    __name__,
+    template_folder=wrap_path("src/templates"),
+    static_folder=wrap_path("src/static"),
+)
+
+db = SQLAlchemy(model_class=Base)
+
 class Core():
    """DO NOT create a new instance, use the provided app_core instead
       from src.core import app_core
@@ -44,10 +58,3 @@ def parse_form(form: dict[str, str]) -> tuple[Client, Patient, Appointment, Vet]
         ]
     )
 
-def wrap_path(relative_path: str) -> Path:
-    """if running the app through pyinstaller, this will replace a path of ./something with pyinstaller root/something"""
-    try:
-        base_path = sys._MEIPASS
-    except Exception:
-        base_path = path.abspath(".")
-    return path.join(base_path, relative_path)

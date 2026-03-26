@@ -4,7 +4,7 @@ import os as os
 from pathlib import Path
 
 from src.db import Client, Patient, Appointment
-from src.core import wrap_path
+from src.utils import wrap_path
 
 class GenerableForm(ABC):
 

@@ -12,11 +12,11 @@
         python314Packages.pip
         
         #possibly overkill but need everything from qt6
-        # qt6.qtbase
-        # qt6.qtwebengine
-        # qt6.qttranslations
-        # python314Packages.pyqt6
-        # python314Packages.pyqt6-webengine
+        qt6.qtbase
+        qt6.qtwebengine
+        qt6.qttranslations
+        python314Packages.pyqt6
+        python314Packages.pyqt6-webengine
 
         # python314Packages.pyinstaller
         # python314Packages.pywebview

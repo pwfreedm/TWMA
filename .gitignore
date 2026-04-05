@@ -2,6 +2,8 @@
 
 !blanks/
 !src/
+!static/
+!templates/
 
 !.gitignore
 !*.py

@@ -1,83 +1,88 @@
 from pypdf import PdfReader, PdfWriter
 from abc import ABC, abstractmethod
 import os as os
+from enum import Enum
 from pathlib import Path
+from datetime import date
 
-from src.db import Client, Patient, Appointment
-from src.core import wrap_path
+from src.utils import address
 
-class GenerableForm(ABC):
+class FormType(Enum):
+    CONSENT = 1
 
+class Form (ABC):
+    _writer: PdfWriter
+
+    def __init__ (self, wr: PdfWriter):
+        self._writer = wr
+            
     @abstractmethod
-    def generate(self):
-        """generation fills the form @p blank and stores it in @p filepath"""
-        pass
+    def save (self, fp: str | Path):
+        raise NotImplementedError("Must implement a save method for this form.")
 
-    @abstractmethod
-    def _mk_fp (self):
-        """Makes sure that a correctly formatted filepath exists for the generated form to exist in"""
-        pass
+class ConsentForm(Form):
 
+    def __init__ (self, wr: PdfWriter):
+        super().__init__(wr)
 
-class Consent(GenerableForm):
-    _date: str
-    _owner: str
-    _addr: str
-    _phone: str
-    _pet: str
-    _breed: str
-    _species: str
-    _sex: str
-    _age: int
-    _color: str
-    _email: str
-    fp: Path = os.path.join(os.path.expanduser('~'), 'Desktop', 'Consents')
+    def save (self, fp: str | Path = os.path.join(os.path.expanduser('~'), 'Desktop', 'Consents')):
+        """ Saves this consent form. 
+            The default path to which a consent will be saved is:
+            ~/Desktop/Consents/Appt_Date/Last_Name.pdf
+        """        
+        form = self._writer.get_form_text_fields()
+        lastname = form['owner'].split(" ")[-1]
 
-
-    def __init__(self, client: Client, pt: Patient, appt: Appointment):
-        self._date = appt.date
-        self._owner = client.name.title()
-        self._addr = client.address.title()
-        self._phone = client.phone
-        self._pet = pt.name.title()
-        self._breed = pt.breed.title()
-        self._species = pt.species.title()
-        self._sex = pt.sex.title()
-        self._age = pt.age
-        self._color = pt.color.title()
-        self._email = client.email
-
-    def _mk_fp(self) -> Path:
-        path = os.path.join(self.fp, str(self._date))
+        path: str = os.path.join(fp, str(form['date']))
         os.makedirs(path, exist_ok=True)
-        return path
 
-    def generate(self):
-        reader = PdfReader(stream=wrap_path("blanks/Euthanasia_Consent_Jan_2026.pdf"))
+        self._writer.remove_annotations(subtypes='/Widget')
+        self._writer.write(os.path.join(path, f"{lastname}.pdf"))
+        
+class FormFactory():
+    _data: dict
+
+    def __init__ (self, data: dict):
+        self._data = data
+    
+    def generate(self, type: FormType):
+        """NOTE: Generation does not remove annotations. Remove annotaions immediately before writing output."""
+        match type:
+            case FormType.CONSENT:
+                return self._generate_consent()
+    
+    def _get_date_time(self):
+        time = date.strptime(self._data['time'], "%H:%M")
+        return  time.strftime("%I:%M %p") + ' ' + self._data['date']
+    
+    def get_elem(self, name: str):
+        return str(self._data[name]).title()
+    
+    def _generate_consent(self):
+        reader = PdfReader(stream=Path("blanks/Euthanasia_Consent.pdf"))
         writer = PdfWriter()
 
         writer.append(reader)
-        # flatten = true and remove_annotations remove the pdf elements from the generated output
         writer.update_page_form_field_values(
             writer.pages[0],
             {
-                "date": self._date,
-                "owner": self._owner,
-                "address": self._addr,
-                "phone": self._phone,
-                "pet": self._pet,
-                "breed": self._breed,
-                "species": self._species,
-                "sex": self._sex,
-                "age": self._age,
-                "color": self._color,
-                "email": self._email
+                "date": self.get_elem('date'),
+                "owner": self.get_elem('client'),
+                "address": address(self._data['address'], self._data['city'], self._data['state'], self._data['zip']),
+                "phone": self.get_elem('phone'),
+                "pet": self.get_elem('patient'),
+                "breed": self.get_elem('breed'),
+                "species": self.get_elem('animal'),
+                "sex": self.get_elem('sex'),
+                "age": self.get_elem('age'),
+                "weight": self.get_elem('weight'),
+                "email": self.get_elem('email'),
+                "vet": self.get_elem('vet'),
+                "appt": self._get_date_time(),
+                "disposal": self.get_elem('disposal')
             },
-            auto_regenerate=False,
-            flatten=True,
+            auto_regenerate=False, 
+            flatten=True
         )
-        writer.remove_annotations(subtypes="/Widget")
-        lastname = self._owner.split(" ")[-1]
-        writer.write(os.path.join(self._mk_fp(), f"{lastname}.pdf"))
-
-
+        return ConsentForm(writer)
+        

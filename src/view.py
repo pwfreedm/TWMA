@@ -1,19 +1,9 @@
-import sys
 from os import path
 
-from flask import Flask, render_template, request, redirect, url_for
+from flask import render_template, request, redirect, url_for
 import webview
 
-from src.core import app_core
-from src.core import wrap_path
-
-
-app = Flask(
-    __name__,
-    template_folder=wrap_path("templates"),
-    static_folder=wrap_path("static"),
-)
-
+from src.core import app, app_core
 
 def on_close():
     app_core.shutdown()

@@ -1,275 +1,169 @@
 import sqlite3 as sq
+from typing import List
 from pathlib import Path
 import os as os
 
-class Client:
-    _name: str
-    _email: str
-    _phone: str
-    _address: str
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import MetaData
+from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy import Integer, String, ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-    def __init__(
-        self,
-        name: str,
-        email: str,
-        phone: str,
-        address: str,
-    ):
-        self._name = name.lower()
-        self._phone = phone.lower()
-        self._address = address.lower()
-        self._email = email.lower()
+class DB_Base (DeclarativeBase):
+     metadata = MetaData(naming_convention={
+        "ix": 'ix_%(column_0_label)s',
+        "uq": "uq_%(table_name)s_%(column_0_name)s",
+        "ck": "ck_%(table_name)s_%(constraint_name)s",
+        "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
+        "pk": "pk_%(table_name)s"
+    })
 
-    def generate_sql_value(self, id: int):
-        return (
-            id,
-            self._name,
-            self._email,
-            self._phone,
-            self._address
-        )
+db = SQLAlchemy(model_class=DB_Base)
 
-    @property
-    def name(self):
-        return self._name
+class Client (db.Model, DB_Base):
+    __tablename__ = "client"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
+    email: Mapped[str] = mapped_column(String(50))
+    phone: Mapped[str] = mapped_column(String(31))
+    address: Mapped[str] = mapped_column(String(150))
+    travel: Mapped[int] = mapped_column(Integer)
 
-    @property
-    def email(self):
-        return self._email
+    # Relationship definitions for ORM
+    animals: Mapped[List["Patient"]] = relationship(back_populates="owner")
 
-    @property
-    def phone(self):
-        return self._phone
+class Vet (db.Model, DB_Base):
+    __table_name__ = "vet"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String, unique=True, nullable=False)
+    comm: Mapped[str] = mapped_column(String)
 
-    @property
-    def address(self):
-        return self._address
-
-class Patient:
-    _name: str
-    _species: str
-    _sex: str
-    _breed: str
-    _age: int
-    _weight: int
-    _color: str
-    _disposal: str
-    _pawprints: int
-    _notes: str
-
-    def __init__(
-        self,
-        name: str,
-        species: str = "",
-        sex: str = "",
-        weight: int = 0,
-        disposal: str = "",
-        pawprints: int = 0,
-        age: int = 0,
-        breed: str = "",
-        color: str = "",
-        notes: str = "",
-    ):
-        self._name = name.lower()
-        self._species = species.lower()
-        self._sex = sex.lower()
-        self._breed = breed.lower()
-        self._age = age
-        self._weight = weight
-        self._color = color.lower()
-        self._disposal = disposal.lower()
-        self._pawprints = pawprints
-        self._notes = notes
-
-    def generate_sql_value(self, id: int, owner_ID: int, vet_ID: int):
-        return (
-            id,
-            self._name,
-            self._species,
-            self._sex,
-            self._breed,
-            self._age,
-            self._weight,
-            self._color,
-            self._disposal,
-            self._pawprints,
-            self._notes,
-            vet_ID,
-            owner_ID,
-        )
-
-    @property
-    def name(self):
-        return self._name
-
-    @property
-    def species(self):
-        return self._species
-
-    @property
-    def sex(self):
-        return self._sex
-
-    @property
-    def breed(self):
-        return self._breed
-
-    @property
-    def age(self):
-        return self._age
-
-    @property
-    def weight(self):
-        return self._weight
-
-    @property
-    def color(self):
-        return self._color
-
-    @property
-    def disposal(self):
-        return self._disposal
-
-    @property
-    def pawprints(self):
-        return self._pawprints
-
-    @property
-    def notes(self):
-        return self._notes
-
-class Appointment:
-    _date: str
-    _time: str
-
-    def __init__(self, date: str, time: str):
-        self._date = date.lower()
-        self._time = time.lower()
-
-    def generate_sql_value(self, owner_ID: int, patient_ID: int):
-        return (patient_ID, self._date, self._time, owner_ID)
-
-    @property
-    def date(self):
-        return self._date
-
-    @property
-    def time(self):
-        return self._time
-
-class Vet:
-    _name: str
-    _comm: str
+    # Relationship definitions for ORM
+    animals: Mapped[List["Patient"]] = relationship(back_populates="vet")
 
 
-    def __init__(self, name: str, comm: str = ""):
-        self._name = name.lower()
-        self._comm = comm.lower()
+class Patient (db.Model, DB_Base):
+    __tablename__ = "patient"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    name: Mapped[str] = mapped_column(String[100], nullable=False)
+    species: Mapped[str] = mapped_column(String[75])
+    sex: Mapped[bool] = mapped_column(String[6])
+    breed: Mapped[str] = mapped_column(String[50])
+    age: Mapped[int] = mapped_column(Integer)
+    weight: Mapped[int] = mapped_column(Integer)
+    disposal: Mapped[str] = mapped_column(String[10])
+    pawprints: Mapped[int] = mapped_column(Integer)
+    notes: Mapped[str] = mapped_column(String)
+    owner_id: Mapped[int] = mapped_column(ForeignKey("client.id"))
 
-    def generate_sql_value(self, id: int):
-        return (id, self._name, self._comm)
-    
-    @property
-    def name(self):
-        return self._name
-    
-    @property
-    def comm(self):
-        return self._comm
+    # Relationship definitions for ORM
+    owner: Mapped["Client"] = relationship(back_populates="animals")
+    appt: Mapped["Appointment"] = relationship(back_populates="patient")
+    vet: Mapped["Vet"] = relationship(back_populates="animals")
 
-class Database:
-    _connection: sq.Connection
-    _cursor: sq.Cursor
+class Appointment (db.Model, DB_Base):
+    __tablename__ = "appointment"
+    id: Mapped[int] = mapped_column(ForeignKey("patient.id"), primary_key=True, autoincrement=False)
+    date: Mapped[str] = mapped_column(String[15], nullable=False)
+    time: Mapped[str] = mapped_column(String[10], nullable=False)
 
-    def __init__(self, path: Path = Path(os.path.join(os.path.expanduser('~'), 'Documents', 'TWMA_DB'))):
-        db_exists: bool = path.is_dir()
-        if not db_exists:
-            os.makedirs(path, exist_ok= True)
-        self._connection = sq.connect(os.path.join(path, 'TWMA.db'))
-        self._cursor = self._connection.cursor()
-        if not db_exists:
-            self.__setup()
+    # Relationship definitions for ORM
+    patient: Mapped["Patient"] = relationship(back_populates="appt", single_parent=True)
 
-    def __setup(self):
-        self._connection.execute("PRAGMA foreign_keys = ON")
-        self._cursor.execute(
-            """CREATE TABLE Clients(
-                    id INTEGER PRIMARY KEY,
-                    name TEXT NOT NULL,
-                    email TEXT,
-                    phone TEXT,
-                    address TEXT
-                    )"""
-        )
-        self._cursor.execute(
-            """CREATE TABLE Vets(
-                    id INTEGER PRIMARY KEY,
-                    name TEXT NOT NULL,
-                    contact TEXT
-                    )"""
-        )
-        self._cursor.execute(
-            """CREATE TABLE Patients(
-                    id INTEGER PRIMARY KEY,
-                    name TEXT NOT NULL,
-                    species TEXT,
-                    sex TEXT,
-                    breed TEXT,
-                    age INTEGER,
-                    weight INTEGER,
-                    color TEXT,
-                    disposal TEXT,
-                    pawprints INTEGER,
-                    notes TEXT,
-                    vet_ID INTEGER REFERENCES Vets(id),
-                    owner_ID INTEGER NOT NULL REFERENCES Clients(id)
-                    )"""
-        )
-        self._cursor.execute(
-            """CREATE TABLE Appointments(
-                    id INTEGER PRIMARY KEY REFERENCES Patients(id),
-                    date TEXT NOT NULL,
-                    time TEXT NOT NULL,
-                    owner_ID INTEGER NOT NULL REFERENCES Clients(id)
-                    )"""
-        )
-        self._connection.commit()
 
-    def valid_table_name(self, table_name: str) -> bool:
-        query = "SELECT 1 FROM sqlite_master WHERE type='table' and name=?"
-        return self._cursor.execute(query, (table_name,)).fetchone() is not None
+# class Database:
+#     _connection: sq.Connection
+#     _cursor: sq.Cursor
 
-    def count_rows(self, table_name: str) -> int | None:
-        if self.valid_table_name(table_name):
-            query = "SELECT COUNT(*) FROM {}".format(table_name)
-            return self._cursor.execute(query).fetchone()[0]
-        return None
+#     def __init__(self, path: Path = Path(os.path.join(os.path.expanduser('~'), 'Documents', 'TWMA_DB'))):
+#         db_exists: bool = path.is_dir()
+#         if not db_exists:
+#             os.makedirs(path, exist_ok= True)
+#         self._connection = sq.connect(os.path.join(path, 'TWMA.db'))
+#         self._cursor = self._connection.cursor()
+#         if not db_exists:
+#             self.__setup()
 
-    def get_vet_id(self, vet):
-        query = "SELECT id FROM Vets WHERE name=?"
-        res = self._cursor.execute(query, (vet._name,)).fetchone()
-        rows = self.count_rows("Vets")
-        return (res[0] if res else rows, rows)
+#     def __setup(self):
+#         self._connection.execute("PRAGMA foreign_keys = ON")
+#         self._cursor.execute(
+#             """CREATE TABLE Clients(
+#                     id INTEGER PRIMARY KEY,
+#                     name TEXT NOT NULL,
+#                     email TEXT,
+#                     phone TEXT,
+#                     address TEXT
+#                     )"""
+#         )
+#         self._cursor.execute(
+#             """CREATE TABLE Vets(
+#                     id INTEGER PRIMARY KEY,
+#                     name TEXT NOT NULL,
+#                     contact TEXT
+#                     )"""
+#         )
+#         self._cursor.execute(
+#             """CREATE TABLE Patients(
+#                     id INTEGER PRIMARY KEY,
+#                     name TEXT NOT NULL,
+#                     species TEXT,
+#                     sex TEXT,
+#                     breed TEXT,
+#                     age INTEGER,
+#                     weight INTEGER,
+#                     color TEXT,
+#                     disposal TEXT,
+#                     pawprints INTEGER,
+#                     notes TEXT,
+#                     vet_ID INTEGER REFERENCES Vets(id),
+#                     owner_ID INTEGER NOT NULL REFERENCES Clients(id)
+#                     )"""
+#         )
+#         self._cursor.execute(
+#             """CREATE TABLE Appointments(
+#                     id INTEGER PRIMARY KEY REFERENCES Patients(id),
+#                     date TEXT NOT NULL,
+#                     time TEXT NOT NULL,
+#                     owner_ID INTEGER NOT NULL REFERENCES Clients(id)
+#                     )"""
+#         )
+#         self._connection.commit()
 
-    def add_record(self, client: Client, patient: Patient, appt: Appointment, vet: Vet):
-        client_id = self.count_rows("Clients")
-        patient_id = self.count_rows("Patients")
-        (vet_id, vet_row_count) = self.get_vet_id(vet)
+#     def valid_table_name(self, table_name: str) -> bool:
+#         query = "SELECT 1 FROM sqlite_master WHERE type='table' and name=?"
+#         return self._cursor.execute(query, (table_name,)).fetchone() is not None
 
-        self._cursor.execute(
-            "INSERT INTO Clients VALUES(?, ?, ?, ?, ?)",
-            client.generate_sql_value(client_id),
-        )
-        if vet_id == vet_row_count:
-            self._cursor.execute(
-                "INSERT INTO Vets VALUES(?, ?, ?)", vet.generate_sql_value(vet_id)
-            )
-        self._cursor.execute(
-            "INSERT INTO Patients VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            patient.generate_sql_value(patient_id, client_id, vet_id),
-        )
-        self._cursor.execute(
-            "INSERT INTO Appointments VALUES(?, ?, ?, ?)",
-            appt.generate_sql_value(client_id, patient_id),
-        )
-        self._connection.commit()
+#     def count_rows(self, table_name: str) -> int | None:
+#         if self.valid_table_name(table_name):
+#             query = "SELECT COUNT(*) FROM {}".format(table_name)
+#             return self._cursor.execute(query).fetchone()[0]
+#         return None
+
+#     def get_vet_id(self, vet):
+#         query = "SELECT id FROM Vets WHERE name=?"
+#         res = self._cursor.execute(query, (vet._name,)).fetchone()
+#         rows = self.count_rows("Vets")
+#         return (res[0] if res else rows, rows)
+
+#     def add_record(self, client: Client, patient: Patient, appt: Appointment, vet: Vet):
+#         client_id = self.count_rows("Clients")
+#         patient_id = self.count_rows("Patients")
+#         (vet_id, vet_row_count) = self.get_vet_id(vet)
+
+#         self._cursor.execute(
+#             "INSERT INTO Clients VALUES(?, ?, ?, ?, ?)",
+#             client.generate_sql_value(client_id),
+#         )
+#         if vet_id == vet_row_count:
+#             self._cursor.execute(
+#                 "INSERT INTO Vets VALUES(?, ?, ?)", vet.generate_sql_value(vet_id)
+#             )
+#         self._cursor.execute(
+#             "INSERT INTO Patients VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+#             patient.generate_sql_value(patient_id, client_id, vet_id),
+#         )
+#         self._cursor.execute(
+#             "INSERT INTO Appointments VALUES(?, ?, ?, ?)",
+#             appt.generate_sql_value(client_id, patient_id),
+#         )
+#         self._connection.commit()

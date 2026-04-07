@@ -3,8 +3,8 @@ import os as os
 from pathlib import Path
 
 from src.core import app_core, parse_form, app
-from src.db import db
-from src.forms import Consent
+from src.db import *
+from src.forms import FormFactory, FormType
 from src.view import init_frontend
 
 
@@ -18,11 +18,11 @@ def setup_db():
 
 
 def process_form():
-    while form := app_core.dequeue():
-        [client, patient, appt, vet] = parse_form(form)
-        Consent(client, patient, appt).generate()
-        # TODO: inserting needs to change now. 
-        # Database().add_record(client, patient, appt, vet)        
+    while data := app_core.dequeue():
+        fac = FormFactory(data)
+        con = fac.generate(FormType.CONSENT)
+        con.save()
+        register_pt(data)
     
 if __name__ == '__main__':
     backend = Thread(target=process_form)

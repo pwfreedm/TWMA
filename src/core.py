@@ -1,10 +1,15 @@
 from queue import Queue, ShutDown
-import sys
-from os import path
 
-from src.db import Client, Patient, Appointment, Vet
-from src.utils import address #move this if parse_form ever finds a new home
-   
+from flask import Flask
+
+from src.utils import address, wrap_path #move this if parse_form ever finds a new home
+
+app = Flask(
+    __name__,
+    template_folder=wrap_path("src/templates"),
+    static_folder=wrap_path("src/static"),
+)
+
 class Core():
    """DO NOT create a new instance, use the provided app_core instead
       from src.core import app_core
@@ -34,20 +39,15 @@ class Core():
 
 app_core = Core()
 
-def parse_form(form: dict[str, str]) -> tuple[Client, Patient, Appointment, Vet]:
-    return tuple(
-        [
-            Client(form['client'], form['email'], form['phone'], address(form['address'], form['city'], form['state'], form['zip'])),
-            Patient(form['patient'], form['animal'], form['sex'], form['weight'], form['disposal'], form['prints'], form['age'], form['breed'], form['color'], form['notes']),
-            Appointment(form['date'], form['time']),
-            Vet(form['vet'])
-        ]
-    )
+# TODO: redo form parsing. 
+def parse_form(form: dict[str, str]):
+   pass
+#     return tuple(
+#         [
+#             Client(form['client'], form['email'], form['phone'], address(form['address'], form['city'], form['state'], form['zip'])),
+#             Patient(form['patient'], form['animal'], form['sex'], form['weight'], form['disposal'], form['prints'], form['age'], form['breed'], form['color'], form['notes']),
+#             Appointment(form['date'], form['time']),
+#             Vet(form['vet'])
+#         ]
+#     )
 
-def wrap_path(relative_path: str) -> Path:
-    """if running the app through pyinstaller, this will replace a path of ./something with pyinstaller root/something"""
-    try:
-        base_path = sys._MEIPASS
-    except Exception:
-        base_path = path.abspath(".")
-    return path.join(base_path, relative_path)

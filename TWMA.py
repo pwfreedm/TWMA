@@ -2,7 +2,7 @@ from threading import Thread
 import os as os
 from pathlib import Path
 
-from src.core import app_core, parse_form
+from src.core import app_core, parse_form, app
 from src.db import *
 from src.forms import FormFactory, FormType
 from src.view import init_frontend

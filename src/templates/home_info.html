@@ -35,15 +35,22 @@
         <label>Zip:</label>
         <input type="text" name="zip"><br><br>
 
+        <input type="radio" id="none" name="travel" value="none" checked>
+        <label for="none">No Fee</label>
+        <input type="radio" id="short" name="travel" value="55">
+        <label for="short">$55</label>
+        <input type="radio" id="long" name="travel" value="65">
+        <label for="long">$65</label><br><br><br><br>
+
+        <label>Patient:</label>
+        <input type="text" name="patient" required>
+
         <input type="radio" id="cat" name="animal" value="cat" checked>
         <label for="cat">Cat</label>
         <input type="radio" id="dog" name="animal" value="dog">
         <label for="dog">Dog</label>
         <input type="radio" id="other" name="animal" value="other">
         <label for="other">Other</label><br><br>
-
-        <label>Patient:</label>
-        <input type="text" name="patient" required>
         
         <label>Age:</label>
         <input type="number" name="age"><br><br>

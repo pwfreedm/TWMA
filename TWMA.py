@@ -22,8 +22,7 @@ def process_form():
         fac = FormFactory(data)
         con = fac.generate(FormType.CONSENT)
         con.save()
-        # [client, patient, appt, vet] = parse_form(form)
-        # Database().add_record(client, patient, appt, vet)        
+        register_pt(data)
     
 if __name__ == '__main__':
     backend = Thread(target=process_form)

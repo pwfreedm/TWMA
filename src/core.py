@@ -33,7 +33,7 @@ class Core():
          return self._forms.get()
       except ShutDown:
          return None
-   
+
    def shutdown(self):
       self._forms.shutdown()
 

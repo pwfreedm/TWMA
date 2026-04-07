@@ -52,8 +52,10 @@ class FormFactory():
                 return self._generate_consent()
     
     def _get_date_time(self):
-        time = date.strptime(self._data['time'], "%H:%M")
-        return  time.strftime("%I:%M %p") + ' ' + self._data['date']
+        if self._data['date'] and self._data['time']:
+            time = date.strptime(self._data['time'], "%H:%M")
+            return  time.strftime("%I:%M %p") + ' ' + self._data['date']
+        return None
     
     def get_elem(self, name: str):
         return str(self._data[name]).title()

@@ -52,6 +52,9 @@ class FormFactory():
                 return self._generate_consent()
     
     def _get_date_time(self):
+        #TODO: fix this. Currently it always returns 12 AM as the time
+        #TODO: day, month, year instead of year, month, date.
+        #good job AI, did everything wrong here.
         if self._data['date'] and self._data['time']:
             time = date.strptime(self._data['time'], "%H:%M")
             return  time.strftime("%I:%M %p") + ' ' + self._data['date']
@@ -78,10 +81,12 @@ class FormFactory():
                 "sex": self.get_elem('sex'),
                 "age": self.get_elem('age'),
                 "weight": self.get_elem('weight'),
-                "email": self.get_elem('email'),
+                "email": self._data['email'],
                 "vet": self.get_elem('vet'),
                 "appt": self._get_date_time(),
-                "disposal": self.get_elem('disposal')
+                "disposal": self.get_elem('disposal'),
+                "fee": self.get_elem('travel'),
+                "prints": self._data['prints']
             },
             auto_regenerate=False, 
             flatten=True

@@ -85,7 +85,8 @@ class FormFactory():
                 "vet": self.get_elem('vet'),
                 "appt": self._get_date_time(),
                 "disposal": self.get_elem('disposal'),
-                "fee": self.get_elem('travel')
+                "fee": self.get_elem('travel'),
+                "prints": self._data['prints']
             },
             auto_regenerate=False, 
             flatten=True

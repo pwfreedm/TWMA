@@ -20,7 +20,8 @@ data = {
     "date": "2024-10-10",
     "time": "15:50",
     "disposal": "home",
-    "travel": "55"
+    "travel": "55",
+    "prints": "33"
 }
 
 f = FormFactory(data)

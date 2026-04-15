@@ -121,7 +121,7 @@ class FormFactory():
         return str(self._data[name]).title()
     
     def _generate_bom(self):
-        reader = PdfReader(stream=wrap_path(Path("../blanks/Bill_of_Materials.pdf")))
+        reader = PdfReader(stream=wrap_path(Path("blanks/Bill_of_Materials.pdf")))
         writer = PdfWriter()
 
         writer.append(reader)
@@ -143,7 +143,7 @@ class FormFactory():
         return BillOfMaterials(writer)
 
     def _generate_consent(self):
-        reader = PdfReader(stream=wrap_path(Path("../blanks/Euthanasia_Consent.pdf")))
+        reader = PdfReader(stream=wrap_path(Path("blanks/Euthanasia_Consent.pdf")))
         writer = PdfWriter()
 
         writer.append(reader)

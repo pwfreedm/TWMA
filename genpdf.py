@@ -27,4 +27,5 @@ data = {
 f = FormFactory(data)
 con = f.generate(FormType.CONSENT)
 con.save("./")
-subprocess.run(["firefox", "2024-10-10/Freedman.pdf"])
+bom = f.generate(FormType.BILL_OF_MATERIALS)
+bom.save("./")

@@ -106,7 +106,5 @@ def register_pt (data:  map[str, str]):
     appt.patient = patient
 
     with app.app_context():
-        db.session.merge(client)
-        db.session.merge(vet)
-        db.session.add_all([patient, appt])
+        db.session.add_all([client, vet, patient, appt])
         db.session.commit()

@@ -6,6 +6,7 @@ from src.core import app_core, app
 from src.db import *
 from src.forms import FormFactory, FormType
 from src.view import init_frontend
+from src.utils import wrap_path
 
 
 def setup_db():

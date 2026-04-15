@@ -2,12 +2,12 @@ from queue import Queue, ShutDown
 
 from flask import Flask
 
-from src.utils import address, wrap_path #move this if parse_form ever finds a new home
+from src.utils import wrap_path 
 
 app = Flask(
     __name__,
-    template_folder=wrap_path("src/templates"),
-    static_folder=wrap_path("src/static"),
+    template_folder=wrap_path("templates"),
+    static_folder=wrap_path("static"),
 )
 
 class Core():
@@ -38,16 +38,3 @@ class Core():
       self._forms.shutdown()
 
 app_core = Core()
-
-# TODO: redo form parsing. 
-def parse_form(form: dict[str, str]):
-   pass
-#     return tuple(
-#         [
-#             Client(form['client'], form['email'], form['phone'], address(form['address'], form['city'], form['state'], form['zip'])),
-#             Patient(form['patient'], form['animal'], form['sex'], form['weight'], form['disposal'], form['prints'], form['age'], form['breed'], form['color'], form['notes']),
-#             Appointment(form['date'], form['time']),
-#             Vet(form['vet'])
-#         ]
-#     )
-

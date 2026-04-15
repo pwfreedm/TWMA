@@ -11,7 +11,7 @@ from src.utils import wrap_path
 
 def setup_db():
     os.makedirs(os.path.join(os.path.expanduser('~'), 'Documents', 'TWMA_DB'), exist_ok=True)
-    db_path = wrap_path(str(Path(os.path.join(os.path.expanduser('~'), 'Documents', 'TWMA_DB'))))
+    db_path = str(Path(os.path.join(os.path.expanduser('~'), 'Documents', 'TWMA_DB')))
     app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_path}/TWMA.db"
     db.init_app(app)
     with app.app_context():

@@ -6,7 +6,6 @@ from src.core import app_core, app
 from src.db import *
 from src.forms import FormFactory, FormType
 from src.view import init_frontend
-from src.utils import wrap_path
 
 
 def setup_db():
@@ -28,8 +27,11 @@ def process_form():
         register_pt(data)
     
 if __name__ == '__main__':
-    backend = Thread(target=process_form)
-    backend.start()
-    setup_db()
-    init_frontend()  
-    backend.join()
+    try:
+        backend = Thread(target=process_form)
+        backend.start()
+        setup_db()
+        init_frontend()  
+        backend.join()
+    except Exception() as e:
+        quit()

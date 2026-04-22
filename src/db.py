@@ -1,10 +1,8 @@
-import sqlite3 as sq
 from typing import List
-from pathlib import Path
 import os as os
 
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import MetaData
+from sqlalchemy import MetaData, select
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy import Integer, String, ForeignKey
 
@@ -73,15 +71,35 @@ class Appointment (db.Model, DB_Base):
     # Relationship definitions for ORM
     patient: Mapped["Patient"] = relationship(back_populates="appt", single_parent=True)
 
-def register_pt (data:  map[str, str]):
-    data = {k : v.lower() for k, v in data.items()}
-    client = Client(name=data['client'], 
+def find_client (name: str) -> Client|None:
+    '''Finds a client, by name, if they are in the DB.
+        Returns None if no matches
+
+        NOTE: This method must be called from within an active database session. 
+    '''
+    query = select(Client).where(Client.name == name.lower())
+    return db.session.execute(query).scalar_one_or_none()
+
+
+def find_vet (name: str) -> Vet|None:
+    '''Finds a vet, by name, if they are in the DB.
+        Returns None if no matches
+
+        NOTE: This method must be called from within an active database session. 
+    '''
+    query = select(Vet).where(Vet.name == name.lower())
+    return db.session.execute(query).scalar_one_or_none() 
+
+def make_client(data: map[str, str]) -> Client:
+    return Client(name=data['client'], 
                 email=data['email'], 
                 phone=data['phone'], 
                 address=address(data['address'], data['city'], data['state'], data['zip']),
                 travel=data['travel']
                 )
-    patient = Patient(name=data['patient'],
+
+def make_pt (data: str) -> Patient:
+    return Patient(name=data['patient'],
                 species=data['animal'],
                 sex=data['sex'],
                 breed=data['breed'],
@@ -91,21 +109,47 @@ def register_pt (data:  map[str, str]):
                 pawprints=data['prints'],
                 notes=data['notes']
                 )
-    appt = Appointment(date=data['date'], 
+
+def make_appt (data: str) -> Appointment:
+    return Appointment(date=data['date'], 
                     time=data['time']
                     )
-    vet = Vet(name=data['vet'], comm='')
 
-    #defining relationships
-    #TODO: add a get_if_exists and get the client and vet if they already exist.
-    client.animals += [patient]
-    vet.animals += [patient]
-    patient.owner = client
-    patient.appt = appt
-    patient.vet = vet
-    appt.patient = patient
+def make_vet (data: str) -> Vet:
+    comm = ''
+    try:
+        comm = data['comm']
+    except: 
+        return Vet(name=data['vet'], comm=comm)
+
+def register_pt (data:  map[str, str]):
+    data = {k : v.lower() for k, v in data.items()}
 
     with app.app_context():
-        db.session.add_all([client, patient, appt])
-        db.session.merge(vet)
+
+        client = find_client(data['client'])
+        if client == None:
+            client = make_client(data)
+
+        vet = find_vet(data['vet'])
+        if vet == None:
+            vet = make_vet(data)
+
+        patient = make_pt(data)
+        appt = make_appt(data)
+
+        #defining relationships
+        patient.owner = client
+        patient.appt = appt
+        patient.vet = vet
+        appt.patient = patient
+
+        #session needs to be aware of the patient to be able to add it to client and vet lists
+        db.session.add(patient)
+
+        #update relationships
+        client.animals.append(patient) 
+        vet.animals.append(patient)
+
+        db.session.add_all([client, appt, vet])
         db.session.commit()

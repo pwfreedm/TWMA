@@ -1,11 +1,8 @@
 from queue import Queue, ShutDown
-from os import path, makedirs
-from json import dumps, load
 from flask import Flask
-from io import open
-from pathlib import Path
 
 from src.utils import wrap_path 
+from src.settings import Settings
 
 app = Flask(
     __name__,
@@ -21,40 +18,11 @@ class Core():
       feels like 'idiotic python' to me.
       """
    _forms: Queue[dict]
-   db_path = str(path.join(path.expanduser('~'), 'Documents', 'DB'))
-   out_path = str(path.join(path.expanduser('~'), 'Desktop'))
-   log_path = str(path.join(wrap_path("logs", src_level=True))) 
-   _settings_path = path.join(wrap_path("settings", src_level=True), "opt.conf")
+   settings: Settings
 
    def __init__(self):
       self._forms = Queue(maxsize = 10)
-      self._read_settings()
-
-   def _read_settings(self):
-      if not Path(self._settings_path).exists():
-         self._write_default_settings()
-      opts = load(open(self._settings_path, mode='r'))
-      self.db_path = opts['db_path']
-      self.out_path = opts['out_path']
-      self.log_path = opts['log_path']
-
-
-   def _write_default_settings(self):
-      #TODO: use reflection here to allow easier addition of default filepaths.
-      json = dumps({'db_path':self.db_path, 'out_path':self.out_path, 'log_path': self.log_path}, 
-                   sort_keys=True, 
-                   indent=2, 
-                   separators=(',', ':')
-                  )
-      
-      makedirs(path.dirname(self._settings_path), exist_ok=True)
-      file = open(self._settings_path, mode='x')
-      file.write(json)
-      file.close()
-
-      
-      
-
+      self.settings = Settings()
 
    def enqueue(self, form: dict[str, str]):
       self._forms.put(form)
@@ -67,5 +35,6 @@ class Core():
 
    def shutdown(self):
       self._forms.shutdown()
+
 
 app_core = Core()

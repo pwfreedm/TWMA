@@ -36,5 +36,6 @@ jobs:
         ./build.sh
     - name: Homescreen Loads
       run: |
-        ls -la /Users/runner/work/TWMA/TWMA/dist/TWMA
+        ls -la /Users/runner/work/TWMA/TWMA/dist/TWMA/.internal
+        ./Users/runner/work/TWMA/TWMA/dist/TWMA/TWMA
         

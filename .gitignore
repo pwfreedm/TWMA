@@ -6,6 +6,7 @@
 !templates/
 
 !.gitignore
+!.github/
 !*.py
 
 !requirements.txt

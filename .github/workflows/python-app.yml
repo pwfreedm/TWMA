@@ -26,6 +26,7 @@ jobs:
     - name: Install dependencies
       run: |
         brew install dbus
+        brew services start dbus
         python -m pip install --upgrade pip
         pip install flake8 pytest dbus-1
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi

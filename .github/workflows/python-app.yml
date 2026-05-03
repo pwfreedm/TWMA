@@ -27,7 +27,7 @@ jobs:
       run: |
         brew install dbus
         brew services start dbus
-        sudo launchctl kickstart -k system/org.freedesktop.dbus-system
+        sudo launchctl kickstart -k system/org.freedesktop.dbus-session
     - name: Install App Dependencies
       run: |
         python -m pip install --upgrade pip setuptools wheel

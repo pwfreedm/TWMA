@@ -36,7 +36,5 @@ jobs:
         ./build.sh
     - name: Homescreen Loads
       run: |
-        ls -la /Users/runner/work/TWMA/TWMA/dist/TWMA
         open /Users/runner/work/TWMA/TWMA/dist/TWMA/TWMA
-        echo "opened successfully"
         

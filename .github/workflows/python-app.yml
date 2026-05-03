@@ -34,4 +34,7 @@ jobs:
     - name: Build the app
       run: |
         ./build.sh
+    - name: Homescreen Loads
+      run: |
+        ls /Users/runner/work/TWMA/TWMA/dist
         

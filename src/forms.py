@@ -5,6 +5,7 @@ from enum import Enum
 from pathlib import Path
 
 from src.utils import address, wrap_path
+from src.core import app_core
 
 class FormType(Enum):
     CONSENT = 1
@@ -55,7 +56,7 @@ class BillOfMaterials(Form):
             flatten=True
         )
 
-    def save (self, fp: str | Path = os.path.join(os.path.expanduser('~'), 'Desktop', 'Bill of Materials')):
+    def save (self, fp: str | Path = os.path.join(app_core.settings.out_path, 'Bill of Materials')):
         """ Saves this Bill of Materials
             The default path to which a BoM will be saved is: 
             ~/Desktop/Bill of Materials/Patient_Name.pdf
@@ -75,7 +76,7 @@ class ConsentForm(Form):
     def __init__ (self, wr: PdfWriter):
         super().__init__(wr)
 
-    def save (self, fp: str | Path = os.path.join(os.path.expanduser('~'), 'Desktop', 'Consents')):
+    def save (self, fp: str | Path = os.path.join(app_core.settings.out_path, 'Consents')):
         """ Saves this consent form. 
             The default path to which a consent will be saved is:
             ~/Desktop/Consents/Appt_Date/Last_Name.pdf
@@ -121,7 +122,7 @@ class FormFactory():
         return str(self._data[name]).title()
     
     def _generate_bom(self):
-        reader = PdfReader(stream=wrap_path(Path("blanks/Bill_of_Materials.pdf"), True))
+        reader = PdfReader(stream=wrap_path(Path("blanks/Bill_of_Materials.pdf"), src_level=True))
         writer = PdfWriter()
 
         writer.append(reader)
@@ -143,7 +144,7 @@ class FormFactory():
         return BillOfMaterials(writer)
 
     def _generate_consent(self):
-        reader = PdfReader(stream=wrap_path(Path("blanks/Euthanasia_Consent.pdf"), True))
+        reader = PdfReader(stream=wrap_path(Path("blanks/Euthanasia_Consent.pdf"), src_level=True))
         writer = PdfWriter()
 
         writer.append(reader)

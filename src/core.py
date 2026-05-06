@@ -1,8 +1,8 @@
 from queue import Queue, ShutDown
-
 from flask import Flask
 
 from src.utils import wrap_path 
+from src.settings import Settings
 
 app = Flask(
     __name__,
@@ -18,17 +18,16 @@ class Core():
       feels like 'idiotic python' to me.
       """
    _forms: Queue[dict]
+   settings: Settings
 
    def __init__(self):
       self._forms = Queue(maxsize = 10)
+      self.settings = Settings()
 
    def enqueue(self, form: dict[str, str]):
       self._forms.put(form)
    
    def dequeue(self) -> dict[str, str] | None:
-
-      #'notifying' all threads apparently means just issuing a shutdown error. 
-      #catch it and return none to terminate the loop processing forms.
       try:
          return self._forms.get()
       except ShutDown:
@@ -36,5 +35,6 @@ class Core():
 
    def shutdown(self):
       self._forms.shutdown()
+
 
 app_core = Core()

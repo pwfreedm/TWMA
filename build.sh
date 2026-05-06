@@ -9,4 +9,5 @@ pyinstaller \
   --add-data="blanks:./blanks" \
   --collect-all PyQt6 \
   --collect-all PyQt6.QtWebEngineWidgets \
+  --icon="settings/icon.icns" \
   TWMA.py

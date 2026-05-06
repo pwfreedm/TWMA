@@ -4,6 +4,7 @@
 !src/
 !static/
 !templates/
+!settings/
 
 !.gitignore
 !.github/

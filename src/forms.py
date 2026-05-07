@@ -108,7 +108,8 @@ class FormFactory():
                 return self._generate_bom()
             
     def _reverse_date(self):
-        return '-'.join(self._data['date'].split('-')[::-1])
+        [year, month, day] = self._data['date'].split('-')
+        return f"{month}-{day}-{year}"
     
     def _get_date_time(self):
         if self._data['date'] and self._data['time']:

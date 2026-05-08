@@ -5,6 +5,20 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
 </head>
 <body>
+
+    <div class="settings-container">
+        <button class="settings-button" title="Settings" onclick="toggleIframe()">
+            ⚙
+        </button>
+
+        <iframe 
+            src="{{ url_for('settings') }}" 
+            title="settings" 
+            id="settings" 
+            hidden>
+        </iframe>
+    </div>
+
     <div class="container">
         <h1>TWMA Database</h1>
         <p class="subtitle">Select a form:</p>
@@ -13,11 +27,10 @@
             <a href="{{ url_for('new_patient') }}" class="card-button">
                 <span>New Patient</span>
             </a>
-            <br>
-            <a href="{{ url_for('settings') }}" class="card-button">
-                <span>Settings</span>
-            </a>
         </div>
     </div>
+
+    <script src="{{ url_for('static', filename='js/showframe.js') }}"></script>
+
 </body>
 </html>

@@ -1,5 +1,6 @@
 from queue import Queue, ShutDown
 from flask import Flask
+from os import makedirs
 
 from src.utils import wrap_path 
 from src.settings import Settings
@@ -32,7 +33,12 @@ class Core():
          return self._forms.get()
       except ShutDown:
          return None
-
+      
+   def setup_fps(self):
+      for [opt, fp] in vars(self.settings).items():
+         if self.settings.is_public_setting(opt):
+            makedirs(fp, exist_ok=True)
+         
    def shutdown(self):
       self._forms.shutdown()
 

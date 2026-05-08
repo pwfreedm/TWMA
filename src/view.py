@@ -1,6 +1,6 @@
 from os import path
 
-from flask import render_template, request, redirect, url_for
+from flask import render_template, request, redirect, url_for, get_flashed_messages, flash, jsonify
 import webview
 
 from src.core import app, app_core
@@ -22,14 +22,18 @@ def new_patient():
     return render_template("home_info.html")
 
 @app.route("/settings")
-def settings():
-
+def settings(db_path: str = app_core.settings.db_path, out_path: str = app_core.settings.out_path):
     return render_template("settings.html", 
-                           db_path=app_core.settings.db_path, 
-                           out_path=app_core.settings.out_path
+                           db_path=db_path, 
+                           out_path=out_path
                            )
 
 @app.route("/submit", methods=["POST"])
 def submit():
     app_core.enqueue(request.form.to_dict())
     return redirect(url_for("landing"))
+
+@app.route("/update", methods=["POST"])
+def update():
+    app_core.enqueue(request.form.to_dict())
+    return settings(db_path=request.form.get('db_path'), out_path=request.form.get('out_path'))

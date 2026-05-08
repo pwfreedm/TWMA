@@ -7,20 +7,22 @@
 <body>
     <h2>Settings</h2>
 
-    <form action="{{ url_for('submit') }}" method="POST">
+    <form action="{{ url_for('update') }}" method="POST">
         <input type="text", name="form_id", value="settings" hidden>
 
-        <label>Filepath for Database:</label>
+        <label>Database Filepath:</label>
         <input type="text" name="db_path" placeholder="{{ db_path }}"><br><br>
 
-        <label>Filepath for Generated Files:</label>
+        <label>Output Filepath:</label>
         <input type="text" name="out_path" placeholder="{{ out_path }}"><br><br>
-        <label>Create filepaths if they don't exist?</label>
+
+        <label>Create New Filepaths?</label>
         <input type ="checkbox" name="create_fps" checked><br><br>
 
-        <label>Delete old copies?</label>
+        <label>Cleanup After Moving?</label>
         <input type = "checkbox" name="remove_old" checked><br><br>
-        <button type="submit">Update</button>
+
+        <button type="update">Update</button>
     </form>
 </body>
 </html>

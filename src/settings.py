@@ -4,6 +4,7 @@ from io import open
 from pathlib import Path
 from typing import Any
 from shutil import copytree, rmtree
+from secrets import token_hex
 
 from src.utils import wrap_path 
 
@@ -15,6 +16,7 @@ class Settings:
         self.out_path = str(path.join(path.expanduser('~'), 'Desktop', 'TWMA Files'))
         self._log_path = str(path.join(wrap_path("logs", src_level=True))) 
         self._settings_path = path.join(wrap_path("settings", src_level=True), "opt.conf")
+        self._secret_key = 0
         self._version = 0.1
 
         self._read_settings()
@@ -23,10 +25,14 @@ class Settings:
       makedirs(path.dirname(self._settings_path), exist_ok=True)
       self.save_settings()
 
+    def get_secret_key(self):
+       return self._secret_key
+    
     def _read_settings(self):
       if not Path(self._settings_path).exists():
+         self._secret_key = token_hex(16)
          self._write_default_settings()
-         self.unpack_json()
+      self.unpack_json()
 
     def save_settings(self):
        file = open(self._settings_path, mode='w')
@@ -44,7 +50,7 @@ class Settings:
     def unpack_json(self):
        json = load(open(self._settings_path, mode='r'))
        for [k, _] in vars(self).items():
-          self.__setattr__(k, json[k])
+          setattr(self, k, json[k])
 
     def check_filepaths (self, data: dict[str, Any]) -> list[str]:
        bad_fps = []
@@ -58,20 +64,31 @@ class Settings:
     def is_public_setting (self, setting: str):
        return setting[0] != '_'
     
+    def _update_fields (self, data: dict[str, Any]):
+       for [opt, _] in vars(self).items():
+          if data.get(opt) and self.is_public_setting(opt):
+             setattr(self, opt, data[opt])
+    
+    def _create_new_fps (self, data: dict[str, Any]):
+       for [opt, fp] in vars(self).items():
+          if data.get(opt) and self.is_public_setting(opt):
+             copytree(src=fp, dst=data[opt], dirs_exist_ok=True)
+
+    def _cleanup_old_fps (self, data: dict[str, Any]):
+       for [opt, fp] in vars(self).items():
+          if data.get(opt) and self.is_public_setting(opt):
+             rmtree(fp, ignore_errors=True)
+      
     def update_settings (self, data: dict[str, Any]):
       # not allowed to make fps and some don't exist already
       if (bad_fps := self.check_filepaths(data)) and not data['create_fps']:
          return f'The following filepaths did not exist and cannot be created:/n{'/n'.join(bad_fps)}'
       
-      for [opt, fp] in vars(self).items():
-         try:
-            if data[opt] and self.is_public_setting(opt):
-               copytree(fp, data[opt])
-               if (data['remove_old']):
-                  rmtree(fp)
-               vars(self).update({opt : data[opt]})
-         except Exception as e:
-            return str(e)
-         
-         self.save_settings()
-         return 'success'
+      if data.get('create_fps'):
+         self._create_new_fps(data)
+
+      if data.get('remove_old'):
+         self._cleanup_old_fps(data)
+
+      self._update_fields(data)
+      self.save_settings()

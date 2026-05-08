@@ -22,6 +22,7 @@ class Form (ABC):
         raise NotImplementedError("Must implement a save method for this form.")
 
 class BillOfMaterials(Form):
+    '''The Bill of Materials could also be referred to as a Medical Record'''
     def __init__(self, wr: PdfWriter):
         super().__init__(wr)
 
@@ -56,7 +57,7 @@ class BillOfMaterials(Form):
             flatten=True
         )
 
-    def save (self, fp: str | Path = os.path.join(app_core.settings.out_path, 'Bill of Materials')):
+    def save (self, fp: str | Path = os.path.join(app_core.settings.out_path, 'Medical Records')):
         """ Saves this Bill of Materials
             The default path to which a BoM will be saved is: 
             ~/Desktop/Bill of Materials/Patient_Name.pdf

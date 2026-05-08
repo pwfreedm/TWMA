@@ -58,10 +58,7 @@ class BillOfMaterials(Form):
         )
 
     def save (self, fp: str | Path = os.path.join(app_core.settings.out_path, 'Medical Records')):
-        """ Saves this Bill of Materials
-            The default path to which a BoM will be saved is: 
-            ~/Desktop/Bill of Materials/Patient_Name.pdf
-        """
+        """ Saves this Medical Record """
         form = self._writer.get_form_text_fields()
         pt_name = ' '.join([form['patient'], form['owner'].split(' ')[-1]])
 
@@ -108,7 +105,7 @@ class FormFactory():
             case FormType.BILL_OF_MATERIALS:
                 return self._generate_bom()
             
-    def _reverse_date(self):
+    def _america_date(self):
         [year, month, day] = self._data['date'].split('-')
         return f"{month}-{day}-{year}"
     
@@ -117,28 +114,27 @@ class FormFactory():
             hrandmin = self._data['time'].split(':')
             time = ':'.join([str(int(hrandmin[0]) % 12), hrandmin[1]])
             amorpm = 'PM' if int(hrandmin[0]) - 12 > 0 else 'AM'
-            return  ' '.join([time, amorpm, self._reverse_date()])
+            return  ' '.join([time, amorpm, self._america_date()])
         return None
     
     def get_elem(self, name: str):
         return str(self._data[name]).title()
     
     def _generate_bom(self):
-        reader = PdfReader(stream=wrap_path(Path("blanks/Bill_of_Materials.pdf"), src_level=True))
+        reader = PdfReader(stream=wrap_path(Path("blanks/Medical_Record.pdf"), src_level=True))
         writer = PdfWriter()
 
         writer.append(reader)
         writer.update_page_form_field_values(
             writer.pages[0],
             {
-                "date": self._reverse_date(),
+                "date": self._america_date(),
                 "owner": self.get_elem('client'),
                 "phone": self._data['phone'],
                 "address": address(self._data['address'], self._data['city'], self._data['state'], self._data['zip']),
                 "patient": self.get_elem('patient'),
                 "species": self.get_elem('animal'),
                 "weight": ' '.join([self.get_elem('weight'), 'lbs']),
-                "date2": self._reverse_date()
             },
             auto_regenerate=False, 
             flatten=True
@@ -153,7 +149,7 @@ class FormFactory():
         writer.update_page_form_field_values(
             writer.pages[0],
             {
-                "date": self._reverse_date(),
+                "date": self._america_date(),
                 "owner": self.get_elem('client'),
                 "address": address(self._data['address'], self._data['city'], self._data['state'], self._data['zip']),
                 "phone": self.get_elem('phone'),

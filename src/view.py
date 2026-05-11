@@ -9,7 +9,7 @@ from src.core import app, app_core
 def on_close():
     app_core.shutdown()
 
-def init_frontend():
+def init_frontend(update: bool):
     window = webview.create_window("TWMA", app)
     window.events.closed += on_close
     webview.start(gui="qt")

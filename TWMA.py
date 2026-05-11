@@ -1,10 +1,12 @@
 from threading import Thread
 import os as os
+import requests 
 
 from src.core import app_core, app
 from src.db import *
 from src.forms import FormFactory, FormType
 from src.view import init_frontend
+from src.utils import online
 
 
 def setup_app():
@@ -31,12 +33,21 @@ def process_form():
             bom.save()
             register_pt(data)
     
+def needs_update ():
+    if not online():
+        return False
+    local_version = app_core.settings.check_local_version()
+    cloud_version = app_core.settings.check_remote_version()
+    return local_version < cloud_version
+
+
 if __name__ == '__main__':
     try:
         setup_app()
         backend = Thread(target=process_form)
         backend.start()
-        init_frontend()  
+        #TODO: give init_frontend a way to deal with this param
+        init_frontend(update=needs_update())  
         backend.join()
-    except Exception() as e:
+    except Exception as e:
         quit()

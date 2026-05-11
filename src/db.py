@@ -1,4 +1,4 @@
-from typing import List
+from typing import Any, List
 import os as os
 
 from flask_sqlalchemy import SQLAlchemy
@@ -98,7 +98,7 @@ def make_client(data: map[str, str]) -> Client:
                 travel=data['travel']
                 )
 
-def make_pt (data: str) -> Patient:
+def make_pt (data: map[str, str]) -> Patient:
     return Patient(name=data['patient'],
                 species=data['animal'],
                 sex=data['sex'],
@@ -110,19 +110,29 @@ def make_pt (data: str) -> Patient:
                 notes=data['notes']
                 )
 
-def make_appt (data: str) -> Appointment:
+def make_appt (data: dict[str, Any]) -> Appointment:
     return Appointment(date=data['date'], 
                     time=data['time']
                     )
 
-def make_vet (data: str) -> Vet:
-    comm = ''
-    try:
-        comm = data['comm']
-    except: 
-        return Vet(name=data['vet'], comm=comm)
+def make_vet (data: dict[str, Any]) -> Vet:
+    return Vet(name=data['vet'], comm=data.get('comm'))
 
-def register_pt (data:  map[str, str]):
+def register_vet (data: dict[str, Any]):
+    data = {k : v.lower() for k, v in data.items()}
+
+    with app.app_context():
+        vet = find_vet(data['vet'])
+        if vet == None:
+            vet = make_vet(data)
+        
+        if data.get('update'):
+            vet.comm = data['comm']
+
+        db.session.add(vet)
+        db.session.commit()
+
+def register_pt (data:  dict[str, Any]):
     data = {k : v.lower() for k, v in data.items()}
 
     with app.app_context():

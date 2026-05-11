@@ -23,6 +23,10 @@ def new_patient():
     vets = Vet.query.all()
     return render_template("home_info.html", vets=vets)
 
+@app.route("/new_vet")
+def new_vet():
+    return render_template("vet_info.html")
+
 @app.route("/settings")
 def settings(db_path: str = app_core.settings.db_path, out_path: str = app_core.settings.out_path):
     return render_template("settings.html", 

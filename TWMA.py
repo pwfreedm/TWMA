@@ -21,6 +21,8 @@ def process_form():
         if (data['form_id'] == 'settings'):
             print(data)
             res = app_core.settings.update_settings(data)
+        elif (data['form_id'] == 'vet_info'):
+            register_vet(data)
         else:
             fac = FormFactory(data)
             con = fac.generate(FormType.CONSENT)

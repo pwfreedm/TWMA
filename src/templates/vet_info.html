@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Form Page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='form.css') }}">
+</head>
+<body>
+    <h2>Vet Info</h2>
+
+    <form action="{{ url_for('submit') }}" method="POST">
+        <input type="text", name="form_id", value="vet_info" hidden>
+        <label>Practice Name:</label>
+        <input type="text" name="vet" pattern="[a-zA-Z].*" title="Please Insert a Practice Name." required><br><br>
+
+        <label for name="comm">Phone Number or Email:</label>
+        <input type="text" name="comm" required>
+
+        <label>Update Communication?</label>
+        <input type ="checkbox" name="update"><br><br>
+
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>

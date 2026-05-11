@@ -3,6 +3,7 @@ from os import path
 from flask import render_template, request, redirect, url_for, get_flashed_messages, flash, jsonify
 import webview
 
+from src.db import Vet
 from src.core import app, app_core
 
 def on_close():
@@ -19,7 +20,8 @@ def landing():
 
 @app.route("/new_patient")
 def new_patient():
-    return render_template("home_info.html")
+    vets = Vet.query.all()
+    return render_template("home_info.html", vets=vets)
 
 @app.route("/settings")
 def settings(db_path: str = app_core.settings.db_path, out_path: str = app_core.settings.out_path):

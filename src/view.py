@@ -5,6 +5,7 @@ import webview
 
 from src.db import Vet
 from src.core import app, app_core
+from src.update import install_patch
 
 def on_close():
     app_core.shutdown()
@@ -12,6 +13,8 @@ def on_close():
 def init_frontend(update: bool):
     window = webview.create_window("TWMA", app)
     window.events.closed += on_close
+    if update:
+        window.events.closed += install_patch
     webview.start(gui="qt")
 
 @app.route("/")

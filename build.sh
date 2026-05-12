@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+source $PWD/.venv/bin/activate
+
+pip install -r requirements.txt
+
 pyinstaller \
   --onedir --windowed \
   --noconfirm --clean \

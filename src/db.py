@@ -116,7 +116,7 @@ def make_appt (data: dict[str, Any]) -> Appointment:
                     )
 
 def make_vet (data: dict[str, Any]) -> Vet:
-    return Vet(name=data['vet'], comm=data.get('comm'))
+    return Vet(name=data['vet'], comm=data.get('comm',''))
 
 def register_vet (data: dict[str, Any]):
     data = {k : v.lower() for k, v in data.items()}

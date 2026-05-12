@@ -1,6 +1,4 @@
-from os import path
-
-from flask import render_template, request, redirect, url_for, get_flashed_messages, flash, jsonify
+from flask import render_template, request, redirect, url_for
 import webview
 
 from src.db import Vet

@@ -34,7 +34,7 @@ class Settings:
     def check_remote_version(self):
        '''Requires an active internet connection. Will fail catastrophically without one. '''
        #TODO: change this link to point to main once the updater is ready to be pushed to main
-       url = "https://raw.githubusercontent.com/pwfreedm/TWMA/refs/heads/updates/settings/version.conf"
+       url = "https://raw.githubusercontent.com/pwfreedm/TWMA/refs/heads/main/settings/version.conf"
        rem = requests.get(url, timeout=5)
        return rem.json()['version']
 

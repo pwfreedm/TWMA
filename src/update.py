@@ -14,7 +14,7 @@ def downlaod_update():
     url = "https://github.com/pwfreedm/TWMA/archive/refs/heads/main.zip"
     repo = requests.get(url, timeout=5)
     with ZipFile(BytesIO(repo.content), 'r') as zip:
-        p = wrap_path("update")
+        p = wrap_path("update", src_level=True)
         os.makedirs(p, exist_ok=True)
         zip.extractall(path=p)
 
@@ -26,7 +26,7 @@ def install_patch():
             copytree(src=os.path.join(src_fp, path), dst=wrap_path(path, src_level=True), dirs_exist_ok=True)
         else:
             copyfile(src=os.path.join(src_fp, path), dst=wrap_path(path, src_level=True))
-            
+
     subprocess.Popen([f'{os.getcwd()}/build.sh'],
                      stdout=subprocess.DEVNULL,
                      stderr=subprocess.DEVNULL)

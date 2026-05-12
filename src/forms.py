@@ -37,8 +37,10 @@ class BillOfMaterials(Form):
             ket = 1
             euth = 1
         elif species == 'dog' and weight <= 30:
-            ket = 0.01 * weight - 0.01
-            euth = 0.1
+            ket = max(0.1, 0.01 * weight - 0.1)
+            dex = max(0.1, 0.01 * weight - 0.1)
+            but = max(0.2, 0.01 * weight)
+            euth = 0.1 * weight
         #because we are dealing with drugs, zero everything unless certain it should be more
         elif species == 'dog' and weight > 30:
             but = 0.01 * weight
@@ -164,7 +166,8 @@ class FormFactory():
                 "appt": self._get_date_time(),
                 "disposal": self.get_elem('disposal'),
                 "fee": self.get_elem('travel'),
-                "prints": self._data['prints']
+                "prints": self._data['prints'],
+                "notes": self._data.get('notes')
             },
             auto_regenerate=False, 
             flatten=True

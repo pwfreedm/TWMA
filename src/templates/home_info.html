@@ -63,13 +63,13 @@
         <input type="text" name="breed"><br><br>
 
         <label>Weight:</label>
-        <input type="number" name="weight" value="0"><br><br>
+        <input type="number" name="weight" placeholder="0" required><br><br>
 
         <label>Local Vet:</label>
         <input list="vets" type="text" name="vet"><br><br>
         <datalist id="vets">
             {% for vet in vets %}
-                <option value="{{ vet.name }}"></option>
+                <option value="{{ vet.name|title }}"></option>
             {% endfor %}
         </datalist>
 

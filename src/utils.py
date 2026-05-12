@@ -1,4 +1,5 @@
 import sys as sys
+import requests
 from os import path, getcwd
 from pathlib import Path
 
@@ -16,3 +17,10 @@ def wrap_path(relative_path: str, src_level = False) -> Path:
         else:
             base_path = path.join(getcwd(), 'src')
     return path.join(base_path, relative_path)
+
+def online () -> bool:
+    try:
+        requests.get("https://google.com", timeout=5)
+        return True
+    except requests.ConnectionError:
+        return False

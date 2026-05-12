@@ -6,6 +6,8 @@ from typing import Any
 from shutil import copytree, rmtree
 from secrets import token_hex
 
+import requests
+
 from src.utils import wrap_path 
 
 class Settings:
@@ -16,14 +18,25 @@ class Settings:
         self.out_path = str(path.join(path.expanduser('~'), 'Desktop', 'TWMA Files'))
         self._log_path = str(path.join(wrap_path("logs", src_level=True))) 
         self._settings_path = path.join(wrap_path("settings", src_level=True), "opt.conf")
+        self._version_path = path.join(wrap_path("settings", src_level=True), "version.conf")
         self._secret_key = 0
-        self._version = 0.1
 
         self._read_settings()
     
     def _write_default_settings(self):
       makedirs(path.dirname(self._settings_path), exist_ok=True)
       self.save_settings()
+
+    def check_local_version(self):
+       file = load(open(self._version_path, mode='r'))
+       return file['version']
+    
+    def check_remote_version(self):
+       '''Requires an active internet connection. Will fail catastrophically without one. '''
+       #TODO: change this link to point to main once the updater is ready to be pushed to main
+       url = "https://raw.githubusercontent.com/pwfreedm/TWMA/refs/heads/updates/settings/version.conf"
+       rem = requests.get(url, timeout=5)
+       return rem.json()['version']
 
     def get_secret_key(self):
        return self._secret_key

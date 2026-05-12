@@ -1,17 +1,18 @@
-from os import path
-
-from flask import render_template, request, redirect, url_for, get_flashed_messages, flash, jsonify
+from flask import render_template, request, redirect, url_for
 import webview
 
 from src.db import Vet
 from src.core import app, app_core
+from src.update import install_patch
 
 def on_close():
     app_core.shutdown()
 
-def init_frontend():
+def init_frontend(update: bool):
     window = webview.create_window("TWMA", app)
     window.events.closed += on_close
+    if update:
+        window.events.closed += install_patch
     webview.start(gui="qt")
 
 @app.route("/")

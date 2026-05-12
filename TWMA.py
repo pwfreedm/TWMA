@@ -5,6 +5,7 @@ from src.core import app_core, app
 from src.db import *
 from src.forms import FormFactory, FormType
 from src.view import init_frontend
+from src.update import downlaod_update, needs_update
 
 
 def setup_app():
@@ -30,13 +31,21 @@ def process_form():
             bom = fac.generate(FormType.BILL_OF_MATERIALS)
             bom.save()
             register_pt(data)
-    
+
 if __name__ == '__main__':
     try:
         setup_app()
         backend = Thread(target=process_form)
+        update = Thread(target=downlaod_update)
+
         backend.start()
-        init_frontend()  
+        has_update = needs_update()
+        if (has_update):
+            update.start()
+
+        init_frontend(update=has_update)
+
+        update.join()
         backend.join()
-    except Exception() as e:
+    except Exception as e:
         quit()

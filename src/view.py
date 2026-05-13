@@ -28,6 +28,10 @@ def new_patient():
 def new_vet():
     return render_template("vet_info.html")
 
+@app.route("/lookup")
+def lookup_record():
+    return render_template("lookup.html")
+
 @app.route("/settings")
 def settings(db_path: str = app_core.settings.db_path, out_path: str = app_core.settings.out_path):
     return render_template("settings.html", 

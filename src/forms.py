@@ -71,6 +71,20 @@ class BillOfMaterials(Form):
         self._writer.remove_annotations(subtypes='/Widget')
         self._writer.write(os.path.join(fp, f'{pt_name}.pdf'))
 
+class Intake(Form):
+    def __init__(self, wr: PdfWriter):
+        super().__init__(wr)
+    
+    def save(self, fp: str | Path = os.path.join(app_core.settings.out_path, 'Intakes')):
+        form = self._writer.get_form_text_fields()
+        lastname = form['owner'].split(" ")[-1]
+
+        path: str = os.path.join(fp, str(form['date']))
+        os.makedirs(path, exist_ok=True)
+
+        self._writer.remove_annotations(subtypes='/Widget')
+        self._writer.write(os.path.join(path, f"{lastname}.pdf"))
+
 class ConsentForm(Form):
 
     def __init__ (self, wr: PdfWriter):
@@ -111,12 +125,19 @@ class FormFactory():
         [year, month, day] = self._data['date'].split('-')
         return f"{month}-{day}-{year}"
     
-    def _get_date_time(self):
+    def _get_time(self):
         if self._data['date'] and self._data['time']:
             hrandmin = self._data['time'].split(':')
             time = ':'.join([str(int(hrandmin[0]) % 12), hrandmin[1]])
             amorpm = 'PM' if int(hrandmin[0]) - 12 > 0 else 'AM'
-            return  ' '.join([time, amorpm, self._america_date()])
+            return ' '.join([time, amorpm])
+        return None
+
+    def _get_date_time(self):
+        date = self._america_date()
+        time = self._get_time()
+        if date and time:
+            return ' '.join([time, date])
         return None
     
     def get_elem(self, name: str):
@@ -142,7 +163,41 @@ class FormFactory():
             flatten=True
         )
         return BillOfMaterials(writer)
+    
+    def _generate_intake(self):
+        reader = PdfReader(stream=wrap_path(Path("blanks/Intake.pdf"), src_level=True))
+        writer = PdfWriter()
 
+        writer.append(reader)
+        writer.update_page_form_field_values(
+            writer.pages[0],
+            {
+                'client': self.get_elem('client'),
+                'phone': self._data['phone'],
+                'email': self._data['email'],
+                'date': self._america_date(),
+                'time': self._get_time(),
+                'address': self.get_elem('address'),
+                'city': self.get_elem('city'),
+                'state': self.get_elem('state'),
+                'zip': self._data['zip'],
+                'travel': self._data['travel'],
+                'patient': self.get_elem('patient'),
+                'species': self.get_elem('species'),
+                'breed': self.get_elem('breed'),
+                'weight': self.get_elem('weight'),
+                'sex': self._data['sex'],
+                'age': self._data['age'],
+                'vet': self.get_elem('vet'),
+                'disposal': self.get_elem('disposal'),
+                'prints': self._data['prints'],
+                'notes': self._data['notes']
+            },
+            auto_regenerate=True, 
+            flatten=True
+        )
+        return Intake(writer)
+    
     def _generate_consent(self):
         reader = PdfReader(stream=wrap_path(Path("blanks/Euthanasia_Consent.pdf"), src_level=True))
         writer = PdfWriter()

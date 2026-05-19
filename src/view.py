@@ -1,7 +1,7 @@
 from flask import render_template, request, redirect, url_for
 import webview
 
-from src.db import Vet
+from src.db import Client, Vet, Patient, Appointment, db
 from src.core import app, app_core
 from src.update import install_patch
 
@@ -28,9 +28,16 @@ def new_patient():
 def new_vet():
     return render_template("vet_info.html")
 
-@app.route("/lookup")
+@app.route("/lookup", methods=["POST", "GET"])
 def lookup_record():
-    return render_template("lookup.html")
+    matches= None
+    if request.method == 'POST':
+        s = db.session
+        name = request.form.get('client').lower()
+        match = s.query(Client).join(Patient.owner).join(Patient.appt).where(Client.name == name).one_or_none()
+        return render_template("lookup.html", match=match)
+        
+    return render_template("lookup.html", matches=None)
 
 @app.route("/settings")
 def settings(db_path: str = app_core.settings.db_path, out_path: str = app_core.settings.out_path):

@@ -7,14 +7,17 @@
     <body>
         <h2>Patient Lookup</h2>
 
-        <form action="{{ url_for('lookup') }}" method="POST">
+        <form action="{{ url_for('lookup_record') }}" method="POST">
             <input type="text" name="form_id", value="lookup" hidden>
 
-            <input type="text" name="client" pattern="[a-zA-Z].* [a-zA-Z].*" title="Please Insert a First and Last Name.">
             <label for="client">Client:</label><br><br>
-
-            <input type="date" name="date">
-            <label for="date">Date:</label><br><br>
+            <input type="text" name="client" pattern="[a-zA-Z].* [a-zA-Z].*" title="Please Insert a First and Last Name.">
+            {% if match is defined %}
+                {% for patient in match.animals %}
+                    <h1><input type="text" value="{{ patient.name|title }}"></h1>
+                {% endfor %}
+            {% endif %}
+            <button type="submit">Search</button>
         </form>
     </body>
 </html>

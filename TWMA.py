@@ -30,6 +30,7 @@ def process_form():
             con.save()
             bom = fac.generate(FormType.BILL_OF_MATERIALS)
             bom.save()
+            fac.generate(FormType.INTAKE).save()
             register_pt(data)
 
 if __name__ == '__main__':

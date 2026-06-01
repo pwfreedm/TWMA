@@ -10,6 +10,7 @@ from src.core import app_core
 class FormType(Enum):
     CONSENT = 1
     BILL_OF_MATERIALS = 2
+    INTAKE = 3
 
 class Form (ABC):
     _writer: PdfWriter
@@ -77,7 +78,7 @@ class Intake(Form):
     
     def save(self, fp: str | Path = os.path.join(app_core.settings.out_path, 'Intakes')):
         form = self._writer.get_form_text_fields()
-        lastname = form['owner'].split(" ")[-1]
+        lastname = form['client'].split(" ")[-1]
 
         path: str = os.path.join(fp, str(form['date']))
         os.makedirs(path, exist_ok=True)
@@ -120,6 +121,8 @@ class FormFactory():
                 return self._generate_consent()
             case FormType.BILL_OF_MATERIALS:
                 return self._generate_bom()
+            case FormType.INTAKE:
+                return self._generate_intake()
             
     def _america_date(self):
         [year, month, day] = self._data['date'].split('-')
@@ -183,7 +186,7 @@ class FormFactory():
                 'zip': self._data['zip'],
                 'travel': self._data['travel'],
                 'patient': self.get_elem('patient'),
-                'species': self.get_elem('species'),
+                'species': self.get_elem('animal'),
                 'breed': self.get_elem('breed'),
                 'weight': self.get_elem('weight'),
                 'sex': self._data['sex'],
